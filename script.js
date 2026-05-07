@@ -177,4 +177,21 @@ downloadBtn.addEventListener("click", () => {
 
 // ── popular song scroll arrows
 document.getElementById("pop_song_left").addEventListener("click",  () => { popSong.scrollLeft -= 220; });
-document.getElementById("pop_song_right").addEventListener("click", () => { popSong.scrollLeft += 220
+document.getElementById("pop_song_right").addEventListener("click", () => { popSong.scrollLeft += 220; });
+
+// ── popular artist scroll arrows
+document.getElementById("pop_art_left").addEventListener("click",  () => { artistBox.scrollLeft -= 200; });
+document.getElementById("pop_art_right").addEventListener("click", () => { artistBox.scrollLeft += 200; });
+
+// ── shuffle button (shuffle icon has class "shuffle")
+document.querySelector(".shuffle").addEventListener("click", () => {
+  const id = Math.floor(Math.random() * songs.length) + 1;
+  loadSong(id);
+  playSong();
+});
+
+// ── init: set volume to 70%
+audio.volume = 0.7;
+volInput.value = 70;
+volBar.style.width = "70%";
+volDot.style.left  = "70%";
