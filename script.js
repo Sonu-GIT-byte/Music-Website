@@ -1,156 +1,180 @@
-let music = document.querySelector('audio');
+// ── elements
+const audio         = document.querySelector("audio");
+const masterPlay    = document.getElementById("masterPlay");
+const seek          = document.getElementById("seek");
+const bar2          = document.getElementById("bar2");
+const dot           = document.querySelector(".bar .dot");
+const currentStart  = document.getElementById("currentStart");
+const currentEnd    = document.getElementById("currentEnd");
+const poster        = document.getElementById("poster_master_play");
+const titleEl       = document.getElementById("title");
+const wave          = document.getElementById("wave");
+const volInput      = document.getElementById("vol");
+const volBar        = document.querySelector(".vol_bar");
+const volDot        = document.getElementById("vol_dot");
+const volIcon       = document.getElementById("vol_icon");
+const downloadBtn   = document.getElementById("download_music");
+const playlistPlays = document.querySelectorAll(".playlistPlay");
+const popSong       = document.querySelector(".pop_song");
+const artistBox     = document.querySelector(".Artists_bx");
 
-let masterPlay = document.getElementById('masterPlay');
-let wave = document.getElementById('wave');
+// ── state
+let currentSong = 1;
+let isPlaying   = false;
 
-let poster_master_play = document.getElementById('poster_master_play');
-let title = document.getElementById('title');
-
-let seek = document.getElementById('seek');
-let bar2 = document.getElementById('bar2');
-let dot = document.querySelector('.bar .dot');
-
-let currentStart = document.getElementById('currentStart');
-let currentEnd = document.getElementById('currentEnd');
-
-let vol = document.getElementById('vol');
-let vol_bar = document.querySelector('.vol_bar');
-let vol_dot = document.getElementById('vol_dot');
-
-let playlistPlay = document.getElementsByClassName('playlistPlay');
-
-// 🎵 FULL SONG LIST (MATCHES YOUR HTML)
-let songs = [
-    { id: "1", songName: "On My Way<br><div class='subtitle'>Alan Walker</div>", poster: "img/1.jpg", src: "audio/1.mp3" },
-    { id: "2", songName: "Faded<br><div class='subtitle'>Alan Walker</div>", poster: "img/2.jpg", src: "audio/2.mp3" },
-    { id: "3", songName: "Perfect<br><div class='subtitle'>Ed Sheeran</div>", poster: "img/3.jpg", src: "audio/3.mp3" },
-    { id: "4", songName: "Chitthi<br><div class='subtitle'>Jubin Nautiyal</div>", poster: "img/222.jpg", src: "audio/4.mp3" },
-    { id: "5", songName: "Humnava Mere<br><div class='subtitle'>Jubin Nautiyal</div>", poster: "img/5.jpg", src: "audio/5.mp3" },
-    { id: "6", songName: "Espresso<br><div class='subtitle'>Sabrina Carpenter</div>", poster: "img/6.jpg", src: "audio/6.mp3" },
-    { id: "7", songName: "Teri Meri Kahaani<br><div class='subtitle'>Arijit Singh</div>", poster: "img/7.jpg", src: "audio/7.mp3" },
-    { id: "8", songName: "Gata Only<br><div class='subtitle'>Cris MJ</div>", poster: "img/8.jpg", src: "audio/8.mp3" },
-    { id: "9", songName: "Happy Nation<br><div class='subtitle'>Ace of Base</div>", poster: "img/9.jpg", src: "audio/9.mp3" },
-    { id: "10", songName: "Jeene Laga Hoon<br><div class='subtitle'>Atif Aslam</div>", poster: "img/10.jpg", src: "audio/10.mp3" }
+// ── song data (update src paths to match your audio files)
+const songs = [
+  { id: 1,  title: "On My Way",          artist: "Alan Walker",             img: "img/1.jpg",   src: "audio/1.mp3"  },
+  { id: 2,  title: "Faded",              artist: "Alan Walker",             img: "img/2.jpg",   src: "audio/2.mp3"  },
+  { id: 3,  title: "Perfect",            artist: "Ed Sheeran",              img: "img/3.jpg",   src: "audio/3.mp3"  },
+  { id: 4,  title: "Chitthi",            artist: "Jubin Nautiyal",          img: "img/222.jpg", src: "audio/4.mp3"  },
+  { id: 5,  title: "Humnava Mere",       artist: "Jubin Nautiyal",          img: "img/5.jpg",   src: "audio/5.mp3"  },
+  { id: 6,  title: "Espresso",           artist: "Sabrina Carpenter",       img: "img/6.jpg",   src: "audio/6.mp3"  },
+  { id: 7,  title: "Teri Meri Kahaani", artist: "Arijit Singh",            img: "img/7.jpg",   src: "audio/7.mp3"  },
+  { id: 8,  title: "Gata Only",          artist: "Cris MJ & FloyyMenor",   img: "img/8.jpg",   src: "audio/8.mp3"  },
+  { id: 9,  title: "Happy Nation",       artist: "Ace of Base",             img: "img/9.jpg",   src: "audio/9.mp3"  },
+  { id: 10, title: "Jeene Laga Hoon",    artist: "Atif Aslam & Shreya",    img: "img/10.jpg",  src: "audio/10.mp3" },
+  { id: 11, title: "Mortals",            artist: "Laura Brehm & Warriyo",  img: "img/11.jpg",  src: "audio/11.mp3" },
+  { id: 12, title: "SummerTime",         artist: "Lana Del Rey",            img: "img/12.jpg",  src: "audio/12.mp3" },
+  { id: 13, title: "Mann Mera",          artist: "Gajendra Verma",          img: "img/13.jpg",  src: "audio/13.mp3" },
+  { id: 14, title: "SugarCrash",         artist: "ElyOtto",                 img: "img/14.jpg",  src: "audio/14.mp3" },
+  { id: 15, title: "Play Date",          artist: "Melanie Martinez",        img: "img/15.jpg",  src: "audio/15.mp3" },
+  { id: 16, title: "Na kar Deewana",     artist: "Mustafa Zahid",           img: "img/16.jpg",  src: "audio/16.mp3" },
+  { id: 17, title: "Aaoge Tum Kabhi",   artist: "The Local Train",         img: "img/17.jpg",  src: "audio/17.mp3" },
+  { id: 18, title: "Tu Aake Dekhle",    artist: "King",                    img: "img/18.jpg",  src: "audio/18.mp3" },
+  { id: 19, title: "Bom Diggy Diggy",   artist: "Zack Knight & Jasmin",   img: "img/19.jpg",  src: "audio/19.mp3" },
+  { id: 20, title: "Choo Lo",            artist: "The Local Train",         img: "img/20.jpg",  src: "audio/20.mp3" },
 ];
 
-let currentIndex = 0;
+// ── helpers
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}.${s < 10 ? "0" + s : s}`;
+}
 
-// ▶️ MASTER PLAY / PAUSE
-masterPlay.addEventListener('click', () => {
-    if (music.paused || music.currentTime <= 0) {
-        music.play();
-        masterPlay.classList.replace('bi-play-fill', 'bi-pause-fill');
-        wave.classList.add('active1');
+function loadSong(id) {
+  const song = songs.find(s => s.id === id);
+  if (!song) return;
+  currentSong = id;
+  audio.src = song.src;
+  poster.src = song.img;
+  titleEl.innerHTML = `${song.title}<div class="subtitle">${song.artist}</div>`;
+}
+
+function playSong() {
+  audio.play();
+  isPlaying = true;
+  masterPlay.classList.replace("bi-play-fill", "bi-pause-fill");
+  wave.classList.add("active1");
+}
+
+function pauseSong() {
+  audio.pause();
+  isPlaying = false;
+  masterPlay.classList.replace("bi-pause-fill", "bi-play-fill");
+  wave.classList.remove("active1");
+}
+
+function togglePlay() {
+  isPlaying ? pauseSong() : playSong();
+}
+
+// ── master play/pause button
+masterPlay.addEventListener("click", togglePlay);
+
+// ── playlist & popular song play buttons
+playlistPlays.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const id = parseInt(btn.id);
+    if (id === currentSong && isPlaying) {
+      pauseSong();
     } else {
-        music.pause();
-        masterPlay.classList.replace('bi-pause-fill', 'bi-play-fill');
-        wave.classList.remove('active1');
+      loadSong(id);
+      playSong();
     }
+  });
 });
 
-// 🔄 RESET ALL PLAY ICONS
-function resetIcons() {
-    Array.from(playlistPlay).forEach(el => {
-        el.classList.remove('bi-pause-circle-fill');
-        el.classList.add('bi-play-circle-fill');
-    });
-}
-
-// ▶️ PLAY FROM PLAYLIST (FIXED)
-Array.from(playlistPlay).forEach((element) => {
-    element.addEventListener('click', function () {
-
-        let index = this.id;
-        let selectedSong = songs.find(song => song.id === index);
-
-        if (!selectedSong) return;
-
-        currentIndex = songs.indexOf(selectedSong);
-
-        resetIcons();
-        this.classList.remove('bi-play-circle-fill');
-        this.classList.add('bi-pause-circle-fill');
-
-        music.src = selectedSong.src;
-        poster_master_play.src = selectedSong.poster;
-        title.innerHTML = selectedSong.songName;
-
-        music.play();
-        masterPlay.classList.replace('bi-play-fill', 'bi-pause-fill');
-        wave.classList.add('active1');
-    });
+// ── seek bar update
+audio.addEventListener("timeupdate", () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  seek.value = pct;
+  bar2.style.width = pct + "%";
+  dot.style.left = pct + "%";
+  currentStart.textContent = formatTime(audio.currentTime);
+  currentEnd.textContent   = formatTime(audio.duration);
 });
 
-// ⏱ TIME UPDATE
-music.addEventListener('timeupdate', () => {
-    let current = music.currentTime;
-    let duration = music.duration;
-
-    if (!isNaN(duration)) {
-
-        let min_dur = Math.floor(duration / 60);
-        let sec_dur = Math.floor(duration % 60);
-        if (sec_dur < 10) sec_dur = "0" + sec_dur;
-        currentEnd.innerText = `${min_dur}:${sec_dur}`;
-
-        let min_cur = Math.floor(current / 60);
-        let sec_cur = Math.floor(current % 60);
-        if (sec_cur < 10) sec_cur = "0" + sec_cur;
-        currentStart.innerText = `${min_cur}:${sec_cur}`;
-
-        let progress = (current / duration) * 100;
-        seek.value = progress;
-        bar2.style.width = `${progress}%`;
-        dot.style.left = `${progress}%`;
-    }
+// ── seek drag
+seek.addEventListener("input", () => {
+  if (!audio.duration) return;
+  audio.currentTime = (seek.value / 100) * audio.duration;
 });
 
-// 🎚 SEEK BAR
-seek.addEventListener('input', () => {
-    music.currentTime = (seek.value * music.duration) / 100;
+// ── auto next song
+audio.addEventListener("ended", () => {
+  const next = currentSong < songs.length ? currentSong + 1 : 1;
+  loadSong(next);
+  playSong();
 });
 
-// 🔊 VOLUME CONTROL
-vol.addEventListener('input', () => {
-    let volume = vol.value;
-    music.volume = volume / 100;
-
-    vol_bar.style.width = `${volume}%`;
-    vol_dot.style.left = `${volume}%`;
+// ── skip buttons
+document.querySelector(".bi-skip-end-fill").addEventListener("click", () => {
+  const next = currentSong < songs.length ? currentSong + 1 : 1;
+  loadSong(next);
+  playSong();
 });
 
-// ⏭ NEXT BUTTON
-document.querySelector('.bi-skip-end-fill').addEventListener('click', () => {
-    currentIndex++;
-    if (currentIndex >= songs.length) currentIndex = 0;
-
-    playSong(currentIndex);
+document.querySelector(".bi-skip-start-fill").addEventListener("click", () => {
+  const prev = currentSong > 1 ? currentSong - 1 : songs.length;
+  loadSong(prev);
+  playSong();
 });
 
-// ⏮ PREVIOUS BUTTON
-document.querySelector('.bi-skip-start-fill').addEventListener('click', () => {
-    currentIndex--;
-    if (currentIndex < 0) currentIndex = songs.length - 1;
-
-    playSong(currentIndex);
+// ── volume
+volInput.addEventListener("input", () => {
+  const v = volInput.value;
+  audio.volume = v / 100;
+  volBar.style.width = v + "%";
+  volDot.style.left  = v + "%";
+  volIcon.className  = v == 0
+    ? "bi bi-volume-mute-fill"
+    : v < 50
+    ? "bi bi-volume-down-fill"
+    : "bi bi-volume-up-fill";
 });
 
-// ▶️ PLAY FUNCTION
-function playSong(index) {
-    let song = songs[index];
-
-    music.src = song.src;
-    poster_master_play.src = song.poster;
-    title.innerHTML = song.songName;
-
-    music.play();
-    masterPlay.classList.replace('bi-play-fill', 'bi-pause-fill');
-    wave.classList.add('active1');
-}
-
-// 🔁 AUTO NEXT SONG
-music.addEventListener('ended', () => {
-    currentIndex++;
-    if (currentIndex >= songs.length) currentIndex = 0;
-    playSong(currentIndex);
+// ── mute toggle on icon click
+volIcon.addEventListener("click", () => {
+  if (audio.volume > 0) {
+    volIcon._savedVol = volInput.value;
+    audio.volume = 0;
+    volInput.value = 0;
+    volBar.style.width = "0%";
+    volDot.style.left  = "0%";
+    volIcon.className  = "bi bi-volume-mute-fill";
+  } else {
+    const v = volIcon._savedVol || 70;
+    audio.volume = v / 100;
+    volInput.value = v;
+    volBar.style.width = v + "%";
+    volDot.style.left  = v + "%";
+    volIcon.className  = "bi bi-volume-up-fill";
+  }
 });
+
+// ── download current song
+downloadBtn.addEventListener("click", () => {
+  const song = songs.find(s => s.id === currentSong);
+  if (!song) return;
+  const a = document.createElement("a");
+  a.href     = song.src;
+  a.download = `${song.title} - ${song.artist}.mp3`;
+  a.click();
+});
+
+// ── popular song scroll arrows
+document.getElementById("pop_song_left").addEventListener("click",  () => { popSong.scrollLeft -= 220; });
+document.getElementById("pop_song_right").addEventListener("click", () => { popSong.scrollLeft += 220
